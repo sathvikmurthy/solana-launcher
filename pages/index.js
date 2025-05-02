@@ -4,10 +4,14 @@ import lockIcon from "../public/lock.svg";
 import plusIcon from "../public/plus.svg";
 import arrowPathIcon from "../public/arrow-path.svg";
 import chevronRightIcon from "../public/chevron-right.svg";
+import { createPhantom, Position } from "@phantom/wallet-sdk";
+import { Connection, PublicKey, Transaction, SystemProgram, clusterApiUrl } from '@solana/web3.js';
 import styles from "@/styles/Home.module.css";
 
 export default function Home() {
 
+  const [wallet, setWallet] = useState("");
+  
   const [formPage, setFormPage] = useState(5);
 
   //form inputs
@@ -15,6 +19,17 @@ export default function Home() {
   const [tokenSupply, setTokenSupply] = useState(1000000000);
 
   const [imagePreview, setImagePreview] = useState(null);
+  
+  const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+
+  const callPhantom = async () => {
+    if(window.solana?.isPhantom) {
+      const resp = await window.solana.connect();
+      setWallet(resp.publicKey.toString());
+    } else {
+      alert("Phantom not found")
+    }
+  }
 
   const pageHandle = (way) => {
     if(way == "back" && formPage != 1) {
@@ -44,7 +59,7 @@ export default function Home() {
           <span>How to use</span>
           <span>FAQ</span>
         </div>
-        <button className={styles.nav__connect}>Select Wallet</button>
+        <button className={styles.nav__connect} onClick={() => callPhantom()}>Select Wallet</button>
       </div>
 
       <div className={styles.body}>
